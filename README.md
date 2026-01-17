@@ -1,5 +1,5 @@
 #SNAP
-###Sandbox Notebook Abide Persistence Tool
+Sandbox Notebook Abide Persistence Tool
 
 > Persistent memory backend service for LLM applications. Scans code repositories and files, extracts structured data into snapshot notebooks for RAG and multi-model access.
 
