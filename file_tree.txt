@@ -1,0 +1,121 @@
+sandbox/
+├── README.md
+├── requirements.txt
+├── INSTALL.md
+├── docker-compose.yml
+├── .dockerignore
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py                           # Orchestration: startup, process_project, get_project_notebook
+│   │
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── settings.py                   # Pydantic settings with validation
+│   │
+│   ├── ingest/
+│   │   ├── __init__.py
+│   │   ├── local_loader.py               # Ingest local directories
+│   │   ├── github_cloner.py              # Clone GitHub repos via git
+│   │   └── file_router.py                # Route files to appropriate parsers
+│   │
+│   ├── parsers/
+│   │   ├── __init__.py
+│   │   ├── pdf_parser.py                 # Parse PDFs → text + metadata
+│   │   ├── text_parser.py                # Parse text/markdown/YAML/JSON
+│   │   ├── csv_parser.py                 # Parse CSV files
+│   │   └── code_parser.py                # Parse code files (basic, V2: tree-sitter)
+│   │
+│   ├── extraction/
+│   │   ├── __init__.py
+│   │   ├── field_mapper.py               # Map parsed content to field_ids
+│   │   └── snapshot_builder.py           # Build snapshots, assemble notebooks
+│   │
+│   ├── storage/
+│   │   ├── __init__.py
+│   │   ├── db.py                         # SQLAlchemy engine, session factory
+│   │   └── snapshot_repo.py              # PostgreSQL persistence for snapshots
+│   │
+│   ├── security/
+│   │   ├── __init__.py
+│   │   ├── network_policy.py             # Domain allowlist validation
+│   │   └── sandbox_limits.py             # File size, runtime, repo limits
+│   │
+│   └── logging/
+│       ├── __init__.py
+│       └── logger.py                     # Structured logging factory
+│
+├── schemas/
+│   ├── master_notebook.yaml              # Master template (field registry, artifacts)
+│   ├── code_notebook_schema.json         # Code snapshot template
+│   └── text_notebook_shapshot.json       # Text snapshot template
+│
+├── data/                                 # Runtime data directory
+│   ├── uploads/                          # User uploaded files staging
+│   ├── repos/                            # Cloned repositories
+│   └── projects/                         # Per-project data
+│       └── {project_id}/                 # Created at runtime per project
+│           ├── uploads/                  # Project-specific uploads
+│           ├── repos/                    # Project-specific cloned repos
+│           └── project_manifest.json     # Lightweight pointer to DB snapshots
+│
+└── docker/
+    └── Dockerfile                        # Production container image
+
+
+## Database Schema (PostgreSQL)
+
+snapshot_notebooks
+├── snapshot_id (UUID, PRIMARY KEY)
+├── project_id (TEXT, NOT NULL)
+├── snapshot_type (TEXT, NOT NULL)       # "code" or "text"
+├── source_file (TEXT, NOT NULL)
+├── field_values (JSONB, NOT NULL)       # {field_id: {value, sources, repeats_index}}
+├── created_at (TIMESTAMPTZ, DEFAULT NOW())
+└── UNIQUE(project_id, source_file)      # Idempotency constraint
+
+
+## Key Files Purpose
+
+### Entry Point
+- main.py: startup(), process_project(), get_project_notebook()
+
+### Configuration
+- settings.py: Environment-based config with Pydantic validation
+- master_notebook.yaml: Schema defining field_ids, types, multi/single values
+
+### Ingestion Pipeline
+- local_loader.py → github_cloner.py → file_router.py → parsers/
+
+### Parsing Layer
+- pdf_parser.py, text_parser.py, csv_parser.py, code_parser.py
+- Each returns: List[Dict[field_id, value]]
+
+### Extraction Layer
+- field_mapper.py: Validates field_ids, enforces stop-on-fill
+- snapshot_builder.py: Creates snapshots, assembles notebooks
+
+### Storage Layer
+- db.py: SQLAlchemy connection management
+- snapshot_repo.py: CRUD operations on snapshot_notebooks table
+
+### Security
+- network_policy.py: Domain allowlist for git clone
+- sandbox_limits.py: File size, repo size, runtime limits
+
+
+## Data Flow
+
+Files → Ingest → Route → Parse → Field Map → Snapshot → DB
+                                                      ↓
+                          Project Notebook (assembled on-demand from DB)
+                                                      ↓
+                          Manifest (lightweight pointer saved to disk)
+
+
+## V2 Enhancements (Planned)
+
+- Enhanced master_notebook.yaml with connection fields
+- Tree-sitter parser for code structure extraction
+- Multi-step pipeline: parse → analyze → connect
+- Incremental snapshot updates across pipeline stages

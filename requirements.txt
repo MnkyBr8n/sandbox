@@ -1,0 +1,23 @@
+# Core framework
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Database
+sqlalchemy>=2.0.0
+psycopg[binary]>=3.1.0
+
+# File parsing
+pypdf>=3.0.0
+
+# Configuration and serialization
+PyYAML>=6.0
+
+# Dashboard (V1 testing)
+Flask>=3.0.0
+
+# Development/Testing (optional)
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+
+# Note: Standard library modules used (no external deps needed):
+# - json, csv, shutil, subprocess, pathlib, datetime, uuid, logging, contextlib, dataclasses, typing, urllib

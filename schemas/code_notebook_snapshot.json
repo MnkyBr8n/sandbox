@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "project_id": "",
+    "snapshot_type": "code",
+    "schema_id": "notebook_schema_v1",
+    "snapshot_id": "",
+    "artifacts": {
+      "code_intel_enabled": false,
+      "text_intel_enabled": false,
+      "connections_enabled": false
+    }
+  },
+  "fields": {
+    "repo.primary_language": {
+      "value": null,
+      "sources": [],
+      "repeats_index": { "references": [] }
+    },
+    "repo.entrypoints": {
+      "value": [],
+      "sources": [],
+      "repeats_index": { "references": [] }
+    },
+    "repo.modules": {
+      "value": [],
+      "sources": [],
+      "repeats_index": { "references": [] }
+    },
+    "repo.test_framework": {
+      "value": null,
+      "sources": [],
+      "repeats_index": { "references": [] }
+    },
+    "repo.ci_pipeline": {
+      "value": null,
+      "sources": [],
+      "repeats_index": { "references": [] }
+    }
+  },
+  "code_intel": {
+    "parser_runs": []
+  },
+  "coverage": {
+    "filled_field_ids": [],
+    "missing_field_ids": []
+  }
+}

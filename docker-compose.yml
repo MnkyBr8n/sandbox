@@ -1,0 +1,40 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: sandbox-postgres
+    environment:
+      POSTGRES_USER: sandbox
+      POSTGRES_PASSWORD: sandbox
+      POSTGRES_DB: sandbox
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sandbox"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sandbox:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: sandbox-tool
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SANDBOX_POSTGRES_DSN: postgresql+psycopg://sandbox:sandbox@postgres:5432/sandbox
+      SANDBOX_LOG_LEVEL: INFO
+      SANDBOX_ENVIRONMENT: production
+    volumes:
+      - ./data:/app/sandbox/data
+      - ./schemas:/app/sandbox/schemas
+    command: python -c "from sandbox.app.main import startup; startup(); print('Sandbox tool initialized')"
+
+volumes:
+  postgres_data:
