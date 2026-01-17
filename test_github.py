@@ -7,7 +7,7 @@ startup()
 print("Ready!\n")
 
 # Your repo
-repo_url = "https://github.com/MnkyBr8n/mom"
+repo_url = "https://github.com/username/RepoName"
 
 project_id = repo_url.split("/")[-1]  # Use repo name as project ID
 
