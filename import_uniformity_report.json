@@ -1,0 +1,1732 @@
+{
+  "audit_metadata": {
+    "generated_at": "2026-01-27T02:14:28.741387Z",
+    "repository_path": "C:\\Users\\yxyel\\snap",
+    "audit_type": "import_uniformity"
+  },
+  "audit_summary": {
+    "total_files_scanned": 26,
+    "total_imports_analyzed": 145,
+    "issues_found": 26,
+    "errors": 0,
+    "warnings": 26
+  },
+  "import_index": [
+    {
+      "file": "C:/Users/yxyel/snap/app/config/settings.py",
+      "line": 6,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/config/settings.py",
+      "line": 8,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/config/settings.py",
+      "line": 9,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "List",
+        "Optional"
+      ],
+      "statement": "from typing import List, Optional"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/config/settings.py",
+      "line": 11,
+      "type": "from_import",
+      "module": "pydantic",
+      "symbols": [
+        "BaseModel",
+        "Field",
+        "field_validator"
+      ],
+      "statement": "from pydantic import BaseModel, Field, field_validator"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/config/settings.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "pydantic_settings",
+      "symbols": [
+        "BaseSettings",
+        "SettingsConfigDict"
+      ],
+      "statement": "from pydantic_settings import BaseSettings, SettingsConfigDict"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line": 7,
+      "type": "from_import",
+      "module": "flask",
+      "symbols": [
+        "Flask",
+        "render_template_string",
+        "jsonify",
+        "send_file"
+      ],
+      "statement": "from flask import Flask, render_template_string, jsonify, send_file"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line": 8,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line": 9,
+      "type": "from_import",
+      "module": "datetime",
+      "symbols": [
+        "datetime"
+      ],
+      "statement": "from datetime import datetime"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line": 10,
+      "type": "direct_import",
+      "module": "json",
+      "alias": null,
+      "statement": "import json"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "app.main",
+      "symbols": [
+        "startup",
+        "get_metrics"
+      ],
+      "statement": "from app.main import startup, get_metrics"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line": 13,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/field_mapper.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/field_mapper.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "dataclasses",
+      "symbols": [
+        "dataclass"
+      ],
+      "statement": "from dataclasses import dataclass"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/field_mapper.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "Any"
+      ],
+      "statement": "from typing import Dict, Any"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/field_mapper.py",
+      "line": 17,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 10,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "List",
+        "Any",
+        "Optional"
+      ],
+      "statement": "from typing import Dict, List, Any, Optional"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 13,
+      "type": "from_import",
+      "module": "datetime",
+      "symbols": [
+        "datetime"
+      ],
+      "statement": "from datetime import datetime"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "uuid",
+      "symbols": [
+        "uuid4"
+      ],
+      "statement": "from uuid import uuid4"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 16,
+      "type": "direct_import",
+      "module": "json",
+      "alias": null,
+      "statement": "import json"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 18,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 19,
+      "type": "from_import",
+      "module": "app.storage.snapshot_repo",
+      "symbols": [
+        "SnapshotRepository"
+      ],
+      "statement": "from app.storage.snapshot_repo import SnapshotRepository"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line": 333,
+      "type": "direct_import",
+      "module": "json",
+      "alias": "j",
+      "statement": "import json as j"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/file_router.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/file_router.py",
+      "line": 16,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/file_router.py",
+      "line": 17,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "List",
+        "Set"
+      ],
+      "statement": "from typing import Dict, List, Set"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/file_router.py",
+      "line": 18,
+      "type": "from_import",
+      "module": "dataclasses",
+      "symbols": [
+        "dataclass"
+      ],
+      "statement": "from dataclasses import dataclass"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/file_router.py",
+      "line": 20,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 16,
+      "type": "direct_import",
+      "module": "shutil",
+      "alias": null,
+      "statement": "import shutil"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 17,
+      "type": "direct_import",
+      "module": "subprocess",
+      "alias": null,
+      "statement": "import subprocess"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 18,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 19,
+      "type": "direct_import",
+      "module": "os",
+      "alias": null,
+      "statement": "import os"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 20,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 21,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "List",
+        "Optional"
+      ],
+      "statement": "from typing import List, Optional"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 23,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 24,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 25,
+      "type": "from_import",
+      "module": "app.security.network_policy",
+      "symbols": [
+        "NetworkPolicyError",
+        "validate_git_remote"
+      ],
+      "statement": "from app.security.network_policy import NetworkPolicyError, validate_git_remote"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line": 26,
+      "type": "from_import",
+      "module": "app.security.sandbox_limits",
+      "symbols": [
+        "SandboxLimitError",
+        "SandboxLimitsEnforcer"
+      ],
+      "statement": "from app.security.sandbox_limits import SandboxLimitError, SandboxLimitsEnforcer"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 19,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 21,
+      "type": "direct_import",
+      "module": "shutil",
+      "alias": null,
+      "statement": "import shutil"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 22,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 23,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "List",
+        "Set"
+      ],
+      "statement": "from typing import List, Set"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 24,
+      "type": "direct_import",
+      "module": "fnmatch",
+      "alias": null,
+      "statement": "import fnmatch"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 26,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 27,
+      "type": "from_import",
+      "module": "app.security.sandbox_limits",
+      "symbols": [
+        "SandboxLimitsEnforcer",
+        "SandboxLimitError"
+      ],
+      "statement": "from app.security.sandbox_limits import SandboxLimitsEnforcer, SandboxLimitError"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 28,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 314,
+      "type": "direct_import",
+      "module": "shutil",
+      "alias": null,
+      "statement": "import shutil"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line": 341,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line": 14,
+      "type": "direct_import",
+      "module": "logging",
+      "alias": null,
+      "statement": "import logging"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line": 15,
+      "type": "direct_import",
+      "module": "sys",
+      "alias": null,
+      "statement": "import sys"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line": 16,
+      "type": "direct_import",
+      "module": "json",
+      "alias": null,
+      "statement": "import json"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line": 17,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Optional",
+        "Dict",
+        "Any"
+      ],
+      "statement": "from typing import Optional, Dict, Any"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line": 19,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 13,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 16,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "List",
+        "Any",
+        "Optional"
+      ],
+      "statement": "from typing import Dict, List, Any, Optional"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 17,
+      "type": "from_import",
+      "module": "datetime",
+      "symbols": [
+        "datetime"
+      ],
+      "statement": "from datetime import datetime"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 18,
+      "type": "direct_import",
+      "module": "yaml",
+      "alias": null,
+      "statement": "import yaml"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 19,
+      "type": "direct_import",
+      "module": "json",
+      "alias": null,
+      "statement": "import json"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 20,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 21,
+      "type": "direct_import",
+      "module": "threading",
+      "alias": null,
+      "statement": "import threading"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 23,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 24,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [],
+      "statement": "from app.logging.logger import ("
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 30,
+      "type": "from_import",
+      "module": "app.ingest.local_loader",
+      "symbols": [
+        "ingest_local_directory"
+      ],
+      "statement": "from app.ingest.local_loader import ingest_local_directory"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 31,
+      "type": "from_import",
+      "module": "app.ingest.github_cloner",
+      "symbols": [
+        "clone_github_repo"
+      ],
+      "statement": "from app.ingest.github_cloner import clone_github_repo"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 32,
+      "type": "from_import",
+      "module": "app.ingest.file_router",
+      "symbols": [
+        "route_files",
+        "FileRoute"
+      ],
+      "statement": "from app.ingest.file_router import route_files, FileRoute"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 33,
+      "type": "from_import",
+      "module": "app.parsers.tree_sitter_parser",
+      "symbols": [
+        "parse_code_tree_sitter"
+      ],
+      "statement": "from app.parsers.tree_sitter_parser import parse_code_tree_sitter"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 34,
+      "type": "from_import",
+      "module": "app.parsers.semgrep_parser",
+      "symbols": [
+        "parse_code_semgrep"
+      ],
+      "statement": "from app.parsers.semgrep_parser import parse_code_semgrep"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 35,
+      "type": "from_import",
+      "module": "app.parsers.text_extractor",
+      "symbols": [
+        "extract_text"
+      ],
+      "statement": "from app.parsers.text_extractor import extract_text"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 36,
+      "type": "from_import",
+      "module": "app.parsers.csv_parser",
+      "symbols": [
+        "parse_csv_file"
+      ],
+      "statement": "from app.parsers.csv_parser import parse_csv_file"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 37,
+      "type": "from_import",
+      "module": "app.extraction.field_mapper",
+      "symbols": [
+        "FieldMapper"
+      ],
+      "statement": "from app.extraction.field_mapper import FieldMapper"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 38,
+      "type": "from_import",
+      "module": "app.extraction.snapshot_builder",
+      "symbols": [
+        "SnapshotBuilder"
+      ],
+      "statement": "from app.extraction.snapshot_builder import SnapshotBuilder"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 39,
+      "type": "from_import",
+      "module": "app.storage.snapshot_repo",
+      "symbols": [
+        "SnapshotRepository"
+      ],
+      "statement": "from app.storage.snapshot_repo import SnapshotRepository"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 40,
+      "type": "from_import",
+      "module": "app.storage.db",
+      "symbols": [
+        "get_engine"
+      ],
+      "statement": "from app.storage.db import get_engine"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 85,
+      "type": "from_import",
+      "module": "app.parsers.semgrep_parser",
+      "symbols": [
+        "validate_semgrep_installation"
+      ],
+      "statement": "from app.parsers.semgrep_parser import validate_semgrep_installation"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 90,
+      "type": "from_import",
+      "module": "sqlalchemy",
+      "symbols": [
+        "text"
+      ],
+      "statement": "from sqlalchemy import text"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/main.py",
+      "line": 320,
+      "type": "direct_import",
+      "module": "shutil",
+      "alias": null,
+      "statement": "import shutil"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/csv_parser.py",
+      "line": 10,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/csv_parser.py",
+      "line": 11,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "Any",
+        "List"
+      ],
+      "statement": "from typing import Dict, Any, List"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/csv_parser.py",
+      "line": 12,
+      "type": "direct_import",
+      "module": "csv",
+      "alias": null,
+      "statement": "import csv"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/csv_parser.py",
+      "line": 13,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/csv_parser.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/csv_parser.py",
+      "line": 156,
+      "type": "direct_import",
+      "module": "io",
+      "alias": null,
+      "statement": "import io"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 8,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 9,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "Any",
+        "Optional",
+        "List"
+      ],
+      "statement": "from typing import Dict, Any, Optional, List"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 10,
+      "type": "direct_import",
+      "module": "subprocess",
+      "alias": null,
+      "statement": "import subprocess"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 11,
+      "type": "direct_import",
+      "module": "json",
+      "alias": null,
+      "statement": "import json"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 12,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/semgrep_parser.py",
+      "line": 63,
+      "type": "direct_import",
+      "module": "tempfile",
+      "alias": null,
+      "statement": "import tempfile"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 8,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 9,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "Any",
+        "List"
+      ],
+      "statement": "from typing import Dict, Any, List"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 10,
+      "type": "from_import",
+      "module": "collections",
+      "symbols": [
+        "Counter"
+      ],
+      "statement": "from collections import Counter"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 11,
+      "type": "direct_import",
+      "module": "re",
+      "alias": null,
+      "statement": "import re"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 12,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 99,
+      "type": "from_import",
+      "module": "pypdf",
+      "symbols": [
+        "PdfReader"
+      ],
+      "statement": "from pypdf import PdfReader"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 187,
+      "type": "direct_import",
+      "module": "docx",
+      "alias": null,
+      "statement": "import docx"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/text_extractor.py",
+      "line": 220,
+      "type": "from_import",
+      "module": "bs4",
+      "symbols": [
+        "BeautifulSoup"
+      ],
+      "statement": "from bs4 import BeautifulSoup"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 11,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 13,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "Any",
+        "Optional",
+        "List",
+        "TYPE_CHECKING"
+      ],
+      "statement": "from typing import Dict, Any, Optional, List, TYPE_CHECKING"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 15,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 18,
+      "type": "from_import",
+      "module": "tree_sitter",
+      "symbols": [
+        "Language",
+        "Parser",
+        "Node"
+      ],
+      "statement": "from tree_sitter import Language, Parser, Node"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 21,
+      "type": "from_import",
+      "module": "tree_sitter",
+      "symbols": [
+        "Language",
+        "Parser",
+        "Node"
+      ],
+      "statement": "from tree_sitter import Language, Parser, Node"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 26,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 27,
+      "type": "from_import",
+      "module": "app.security.sandbox_limits",
+      "symbols": [
+        "SandboxLimitsEnforcer"
+      ],
+      "statement": "from app.security.sandbox_limits import SandboxLimitsEnforcer"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line": 62,
+      "type": "direct_import",
+      "module": "importlib",
+      "alias": null,
+      "statement": "import importlib"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 13,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "dataclasses",
+      "symbols": [
+        "dataclass"
+      ],
+      "statement": "from dataclasses import dataclass"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 16,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Optional",
+        "Dict"
+      ],
+      "statement": "from typing import Optional, Dict"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 17,
+      "type": "from_import",
+      "module": "urllib.parse",
+      "symbols": [
+        "urlparse"
+      ],
+      "statement": "from urllib.parse import urlparse"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 18,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 19,
+      "type": "direct_import",
+      "module": "ipaddress",
+      "alias": null,
+      "statement": "import ipaddress"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 20,
+      "type": "direct_import",
+      "module": "threading",
+      "alias": null,
+      "statement": "import threading"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 21,
+      "type": "direct_import",
+      "module": "socket",
+      "alias": null,
+      "statement": "import socket"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 23,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line": 24,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line": 14,
+      "type": "direct_import",
+      "module": "time",
+      "alias": null,
+      "statement": "import time"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "pathlib",
+      "symbols": [
+        "Path"
+      ],
+      "statement": "from pathlib import Path"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line": 16,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Iterable",
+        "Literal"
+      ],
+      "statement": "from typing import Iterable, Literal"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line": 18,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line": 19,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 7,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 9,
+      "type": "from_import",
+      "module": "contextlib",
+      "symbols": [
+        "contextmanager"
+      ],
+      "statement": "from contextlib import contextmanager"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 10,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Iterator"
+      ],
+      "statement": "from typing import Iterator"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "sqlalchemy",
+      "symbols": [
+        "create_engine"
+      ],
+      "statement": "from sqlalchemy import create_engine"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 13,
+      "type": "from_import",
+      "module": "sqlalchemy.engine",
+      "symbols": [
+        "Engine"
+      ],
+      "statement": "from sqlalchemy.engine import Engine"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "sqlalchemy.orm",
+      "symbols": [
+        "sessionmaker",
+        "Session"
+      ],
+      "statement": "from sqlalchemy.orm import sessionmaker, Session"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line": 16,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 12,
+      "type": "from_import",
+      "module": "__future__",
+      "symbols": [
+        "annotations"
+      ],
+      "statement": "from __future__ import annotations"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 14,
+      "type": "from_import",
+      "module": "dataclasses",
+      "symbols": [
+        "dataclass"
+      ],
+      "statement": "from dataclasses import dataclass"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 15,
+      "type": "from_import",
+      "module": "typing",
+      "symbols": [
+        "Dict",
+        "List",
+        "Any",
+        "Optional"
+      ],
+      "statement": "from typing import Dict, List, Any, Optional"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 16,
+      "type": "from_import",
+      "module": "datetime",
+      "symbols": [
+        "datetime"
+      ],
+      "statement": "from datetime import datetime"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 17,
+      "type": "from_import",
+      "module": "uuid",
+      "symbols": [
+        "uuid4"
+      ],
+      "statement": "from uuid import uuid4"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 18,
+      "type": "direct_import",
+      "module": "yaml",
+      "alias": null,
+      "statement": "import yaml"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 19,
+      "type": "direct_import",
+      "module": "json",
+      "alias": null,
+      "statement": "import json"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 21,
+      "type": "from_import",
+      "module": "sqlalchemy",
+      "symbols": [
+        "text"
+      ],
+      "statement": "from sqlalchemy import text"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 23,
+      "type": "from_import",
+      "module": "app.logging.logger",
+      "symbols": [
+        "get_logger"
+      ],
+      "statement": "from app.logging.logger import get_logger"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 24,
+      "type": "from_import",
+      "module": "app.storage.db",
+      "symbols": [
+        "db_session",
+        "get_engine"
+      ],
+      "statement": "from app.storage.db import db_session, get_engine"
+    },
+    {
+      "file": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line": 25,
+      "type": "from_import",
+      "module": "app.config.settings",
+      "symbols": [
+        "get_settings"
+      ],
+      "statement": "from app.config.settings import get_settings"
+    }
+  ],
+  "issues": [
+    {
+      "file_path": "C:/Users/yxyel/snap/app/__init__.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/__init__.py",
+      "resolved_target": "# app/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/__init__.py",
+      "resolved_target": "# app/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/config/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/config/__init__.py",
+      "resolved_target": "# app/config/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/config/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/config/settings.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/config/settings.py",
+      "resolved_target": "# app/config/settings.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/config/settings.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/dashboard.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/dashboard.py",
+      "resolved_target": "# app/dashboard.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/dashboard.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/extraction/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/extraction/__init__.py",
+      "resolved_target": "# app/extraction/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/extraction/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/extraction/field_mapper.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/extraction/field_mapper.py",
+      "resolved_target": "# app/extraction/field_mapper.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/extraction/field_mapper.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/extraction/snapshot_builder.py",
+      "resolved_target": "# app/extraction/snapshot_builder.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/extraction/snapshot_builder.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/extraction/snapshot_builder.py",
+      "line_number": 333,
+      "import_statement": "import json as j",
+      "resolved_target": "json",
+      "issue_type": "duplicate_import",
+      "expected_uniform_form": "Remove duplicate import (first seen at line 16)",
+      "severity": "warning",
+      "evidence": "Module json imported multiple times in the same file"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/ingest/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/ingest/__init__.py",
+      "resolved_target": "# app/ingest/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/ingest/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/ingest/file_router.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/ingest/file_router.py",
+      "resolved_target": "# app/ingest/file_router.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/ingest/file_router.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/ingest/github_cloner.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/ingest/github_cloner.py",
+      "resolved_target": "# app/ingest/github_cloner.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/ingest/github_cloner.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/ingest/local_loader.py",
+      "resolved_target": "# app/ingest/local_loader.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/ingest/local_loader.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/ingest/local_loader.py",
+      "line_number": 314,
+      "import_statement": "import shutil",
+      "resolved_target": "shutil",
+      "issue_type": "duplicate_import",
+      "expected_uniform_form": "Remove duplicate import (first seen at line 21)",
+      "severity": "warning",
+      "evidence": "Module shutil imported multiple times in the same file"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/logging/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/logging/__init__.py",
+      "resolved_target": "# app/logging/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/logging/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/logging/logger.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/logging/logger.py",
+      "resolved_target": "# app/logging/logger.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/logging/logger.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/main.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/main.py",
+      "resolved_target": "# app/main.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/main.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/main.py",
+      "line_number": 85,
+      "import_statement": "from app.parsers.semgrep_parser import validate_semgrep_installation",
+      "resolved_target": "app.parsers.semgrep_parser",
+      "issue_type": "duplicate_import",
+      "expected_uniform_form": "Remove duplicate import (first seen at line 34)",
+      "severity": "warning",
+      "evidence": "Module app.parsers.semgrep_parser imported multiple times in the same file"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/parsers/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/parsers/__init__.py",
+      "resolved_target": "# app/parsers/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/parsers/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/parsers/tree_sitter_parser.py",
+      "line_number": 21,
+      "import_statement": "from tree_sitter import Language, Parser, Node",
+      "resolved_target": "tree_sitter",
+      "issue_type": "duplicate_import",
+      "expected_uniform_form": "Remove duplicate import (first seen at line 18)",
+      "severity": "warning",
+      "evidence": "Module tree_sitter imported multiple times in the same file"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/security/_init_.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/security/__init__.py",
+      "resolved_target": "# app/security/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/security/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/security/network_policy.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/security/network_policy.py",
+      "resolved_target": "# app/security/network_policy.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/security/network_policy.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/security/sandbox_limits.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/security/sandbox_limits.py",
+      "resolved_target": "# app/security/sandbox_limits.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/security/sandbox_limits.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/storage/__init__.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/storage/__init__.py",
+      "resolved_target": "# app/storage/__init__.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/storage/__init__.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/storage/db.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/storage/db.py",
+      "resolved_target": "# app/storage/db.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/storage/db.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    },
+    {
+      "file_path": "C:/Users/yxyel/snap/app/storage/snapshot_repo.py",
+      "line_number": 1,
+      "import_statement": "# sandbox/app/storage/snapshot_repo.py",
+      "resolved_target": "# app/storage/snapshot_repo.py",
+      "issue_type": "comment_path_inconsistency",
+      "expected_uniform_form": "# app/storage/snapshot_repo.py",
+      "severity": "warning",
+      "evidence": "File header comment references sandbox/app/ instead of app/"
+    }
+  ],
+  "module_registry": [
+    "app",
+    "app.config",
+    "app.config.settings",
+    "app.dashboard",
+    "app.extraction",
+    "app.extraction.field_mapper",
+    "app.extraction.snapshot_builder",
+    "app.ingest",
+    "app.ingest.file_router",
+    "app.ingest.github_cloner",
+    "app.ingest.local_loader",
+    "app.logging",
+    "app.logging.logger",
+    "app.main",
+    "app.parsers",
+    "app.parsers.csv_parser",
+    "app.parsers.semgrep_parser",
+    "app.parsers.text_extractor",
+    "app.parsers.tree_sitter_parser",
+    "app.security",
+    "app.security.network_policy",
+    "app.security.sandbox_limits",
+    "app.storage",
+    "app.storage.db",
+    "app.storage.snapshot_repo"
+  ],
+  "naming_conventions": {
+    "expected_prefix": "app.*",
+    "disallowed_prefixes": [
+      "sandbox.app.*",
+      "snap.app.*"
+    ],
+    "relative_imports_policy": "convert_to_absolute"
+  }
+}

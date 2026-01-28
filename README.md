@@ -1,270 +1,153 @@
-#SNAP
+# SNAP
 Sandbox Notebook Abide Persistence Tool
 
-> Persistent memory backend service for LLM applications. Scans code repositories and files, extracts structured data into snapshot notebooks for RAG and multi-model access.
+> Multi-snapshot RAG notebook system. Categorizes code/documents into 12 snapshot types for targeted retrieval.
 
 ---
 
-## Overview
+## V2 Architecture
 
-This backend service ingests files and repositories, parses content, creates field-based snapshots, and assembles project notebooks. Designed for external LLM applications requiring persistent memory across sessions and vendors.
+**12 Categorized Snapshots per File:**
+- Code: file_metadata, imports, exports, functions, classes, connections, repo_metadata
+- Security/Quality: security, quality
+- Documents: doc_metadata, doc_content, doc_analysis
 
----
+**Multi-Parser Pipeline:**
+- Code → tree_sitter + semgrep
+- Documents → text_extractor
+- CSV → csv_parser
 
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| **Multi-Source Ingestion** | Local files and GitHub repositories |
-| **Persistent Memory** | Project notebooks stored in PostgreSQL |
-| **Multi-LLM Compatible** | Vendor-agnostic snapshot format |
-| **Idempotent Processing** | Retry-safe file parsing |
-| **Lightweight Pointers** | Manifest files for efficient multi-model access |
-| **Swappable Parsers** | Modular parser architecture |
-| **Metrics Dashboard** | Real-time visualization of snapshots and projects |
-| **Vendor Tracking** | Logs which LLM vendor accesses each project |
-| **Security Logging** | Tracks duplicate attempts and idempotency events |
+**Per-Project Isolation:**
+- `staging/{project_id}/` → `repos/{project_id}/` → snapshots
+- No global notebook
+- Delete project = delete all
 
 ---
 
 ## Quick Start
 
-### Option 1: Automated Setup (Recommended)
-
 ```bash
-# Run setup script
+# Install semgrep
+pip install semgrep
+
+# Setup
 chmod +x setup.sh && ./setup.sh
-
-# Configure environment
 cp .env.template .env
-vim .env
 
-# Start database and dashboard
+# Start
 docker-compose up -d postgres
 python -m app.dashboard
 ```
 
-> Access the dashboard at `http://localhost:5000`
-
-### Option 2: Docker (Full Stack)
-
-```bash
-docker-compose up -d
-```
-
-> Access the dashboard at `http://localhost:5000`
-
-### Option 3: Manual Setup
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.template .env
-# Edit .env with your settings
-
-# Initialize database
-createdb sandbox
-python -c "from app.main import startup; startup()"
-
-# Start dashboard
-python -m app.dashboard
-```
+Dashboard: `http://localhost:5000`
 
 ---
 
-## Integration Example
+## Integration
 
 ```python
-from pathlib import Path
-from app.main import startup, process_project, get_project_notebook
+from app.main import startup, process_project
+from app.ingest.local_loader import get_project_staging_path
 
-# Initialize service
 startup()
 
-# Process a project
+# Agent uploads to staging
+staging = get_project_staging_path("project_a")
+# → staging/project_a/
+
+# Process with multi-parser pipeline
 manifest = process_project(
-    project_id="internal-knowledge-base",
+    project_id="project_a",
     vendor_id="anthropic",
-    local_path=Path("/path/to/files"),
-    snapshot_type="code"
+    local_path=staging
 )
 
-# Retrieve assembled notebook
-notebook = get_project_notebook(
-    project_id="internal-knowledge-base",
-    vendor_id="anthropic",
-    snapshot_type="code"
-)
+# Query specific snapshot types
+from app.extraction.snapshot_builder import SnapshotBuilder
+builder = SnapshotBuilder(master_schema)
+
+imports = builder.get_project_snapshots_by_type("project_a", "imports")
+security = builder.get_project_snapshots_by_type("project_a", "security")
 ```
 
 ---
 
-## Metrics Dashboard
-
-View real-time metrics and project statistics:
+## Dashboard
 
 ```bash
 python -m app.dashboard
 ```
 
-> Access at `http://localhost:5000`
+**Metrics:**
+- Files: attempted/processed/failed
+- Snapshots: attempted/created/failed/rejected
+- File categories: normal/large/potential_god/rejected
+- Parser usage
+- Snapshot type distribution
 
-**Dashboard Metrics:**
-
-- Total snapshots created
-- Active projects
-- Snapshots by type (code/text)
-- Per-project breakdown
-- Recent activity (24h)
-
-See [`DASHBOARD_GUIDE.md`](DASHBOARD_GUIDE.md) for details.
+**Log Export:** Click "Export Logs" → `snapshot_logs_{timestamp}.json`
 
 ---
 
-## Project Structure
+## Pipeline Flow
 
 ```
-sandbox/
-├── app/
-│   ├── main.py                    # Orchestration layer
-│   ├── dashboard.py               # Metrics visualization
-│   ├── config/settings.py         # Configuration
-│   ├── ingest/                    # File/repo ingestion
-│   ├── parsers/                   # PDF, text, CSV, code parsers
-│   ├── extraction/                # Field mapping, snapshot building
-│   ├── storage/                   # Database persistence
-│   ├── security/                  # Network policy, limits
-│   └── logging/                   # Structured logging
-├── schemas/
-│   ├── master_notebook.yaml       # Master template
-│   ├── code_notebook_schema.json  # Code snapshot template
-│   └── text_notebook_snapshot.json # Text snapshot template
-├── data/
-│   └── projects/{project_id}/     # Per-project data
-│       ├── uploads/               # User uploaded files
-│       ├── repos/                 # Cloned repositories
-│       └── project_manifest.json  # Lightweight pointer
-├── .env.template                  # Environment config template
-├── .env.example                   # Example configurations
-├── setup.sh                       # Quick setup script
-└── docker-compose.yml             # Docker orchestration
+staging/{project_id}/
+    ↓
+file_router (multi-parser)
+    ↓
+tree_sitter + semgrep (code)
+text_extractor (docs)
+    ↓
+field_mapper (categorize 12 types)
+    ↓
+snapshot_builder (create with IDs)
+    ↓
+snapshot_repo (persist)
+    ↓
+Query: WHERE project_id={project_id}
 ```
 
 ---
 
-## Architecture
+## File Categorization
 
-### Pipeline Flow
+| Category | LOC | Action |
+|----------|-----|--------|
+| normal | < 1,500 | Process |
+| large | 1,500-3,999 | Warn |
+| potential_god | 4,000-4,999 | Log |
+| rejected | ≥ 5,000 | Error |
 
+---
+
+## RAG Queries
+
+```sql
+-- All imports
+SELECT * FROM snapshot_notebooks WHERE snapshot_type = 'imports';
+
+-- Security issues
+SELECT * FROM snapshot_notebooks WHERE snapshot_type = 'security';
+
+-- File analysis
+SELECT * FROM snapshot_notebooks WHERE source_file = '/repo/utils.py';
 ```
-Files → Ingest → Parse → Field Map → Snapshot → DB
-                                                 ↓
-                                 Project Notebook (assembled on-demand)
-```
-
-### Key Components
-
-| Component | Purpose |
-|-----------|---------|
-| **Parsers** | Extract content from files |
-| **Field Mapper** | Maps content to field_ids |
-| **Snapshot Builder** | Creates and assembles notebooks |
-| **Snapshot Repo** | PostgreSQL persistence |
 
 ---
 
 ## Configuration
 
-Create a `.env` file from the template:
-
 ```bash
 cp .env.template .env
 ```
 
-### Required Variables
-
-| Variable | Description |
-|----------|-------------|
-| `SANDBOX_POSTGRES_DSN` | PostgreSQL connection string |
-| `SANDBOX_LOG_LEVEL` | Logging level (INFO, DEBUG, etc.) |
-| `SANDBOX_LOG_JSON` | Enable JSON log format (true/false) |
-| `SANDBOX_ENVIRONMENT` | Runtime environment (dev, prod) |
-
-### Optional Variables
-
-| Variable | Description |
-|----------|-------------|
-| `SANDBOX_DATA_DIR` | Custom data directory path |
-| `SANDBOX_SCHEMAS_DIR` | Custom schemas directory path |
-| `SANDBOX_GIT_CLONE_TIMEOUT_SECONDS` | Git clone timeout |
-
-See [`.env.template`](.env.template) for all options.
-
-> **Docker:** Environment variables are configured in `docker-compose.yml`.
-
----
-
-## API Reference
-
-| Function | Description |
-|----------|-------------|
-| `startup()` | Initializes service, loads schemas, ensures database tables exist |
-| `process_project(...)` | Scans files, creates snapshots, returns lightweight manifest |
-| `get_project_notebook(...)` | Retrieves assembled project notebook for RAG pipelines |
-| `get_project_manifest(project_id)` | Returns lightweight project manifest from disk |
-| `get_metrics()` | Returns snapshot and project metrics |
-| `delete_project(project_id)` | Deletes all snapshots and project data |
-
-### Function Signatures
-
-```python
-startup() -> None
-
-process_project(
-    project_id: str,
-    vendor_id: str,
-    repo_url: str | None = None,
-    local_path: Path | None = None,
-    snapshot_type: str = "code"
-) -> Manifest
-
-get_project_notebook(
-    project_id: str,
-    vendor_id: str,
-    snapshot_type: str
-) -> Notebook
-```
-
----
-
-## Multi-LLM Access
-
-```
-1. Process project  →  Generate manifest
-2. Embed notebook   →  Vector database
-3. Query vectors    →  Multiple LLM vendors
-4. No reassembly or reprocessing required
-```
-
----
-
-## Development
-
-### Testing
-
-```bash
-pytest
-```
-
-### Adding Parsers
-
-1. Create `parsers/new_parser.py`
-2. Implement `parse_new(path) -> ParseResult`
-3. Update routing in `main.py`
-
-> No other changes required.
+| Variable | Default |
+|----------|---------|
+| SANDBOX_POSTGRES_DSN | localhost |
+| SANDBOX_PARSER_LIMITS_SOFT_CAP_LOC | 1500 |
+| SANDBOX_PARSER_LIMITS_HARD_CAP_LOC | 5000 |
+| SANDBOX_GIT_CLONE_TIMEOUT_SECONDS | 600 |
 
 ---
 
@@ -274,25 +157,13 @@ pytest
 |------------|---------|
 | Python | 3.11+ |
 | PostgreSQL | 14+ |
-| Git | Latest |
-| Flask | 3.0+ (dashboard only) |
-
-See [`INSTALL.md`](INSTALL.md) for detailed setup instructions.
-
----
-
-## Documentation
-
-| Document | Description |
-|----------|-------------|
-| [`INSTALL.md`](INSTALL.md) | Installation and setup |
-| [`DASHBOARD_GUIDE.md`](DASHBOARD_GUIDE.md) | Metrics dashboard usage |
-| [`LOGGING_UPDATES.md`](LOGGING_UPDATES.md) | Logging and vendor tracking |
-| [`file_tree.txt`](file_tree.txt) | Complete project structure |
-| [`.env.template`](.env.template) | Environment configuration reference |
+| tree-sitter | 0.20+ |
+| semgrep | 1.50+ |
+| PyPDF2 | 3.0+ |
+| python-docx | 0.8+ |
 
 ---
 
 ## License
 
-Open Source — Enterprise licensing available
+Open Source

@@ -1,4 +1,4 @@
-# snap/docker/Dockerfile
+# snap/app/Dockerfile
 FROM python:3.11-slim
 
 # Install system dependencies
@@ -14,13 +14,14 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code and schemas
-# Imports use `from app...` pattern
+# Copy application code
 COPY app/ ./app/
-COPY schemas/ ./schemas/
 
 # Create data directories
-RUN mkdir -p data/uploads data/repos data/projects
+RUN mkdir -p data/uploads data/repos data/projects schemas
+
+# Copy schema files
+COPY schemas/ ./schemas/
 
 # Set Python path
 ENV PYTHONPATH=/app
@@ -29,7 +30,7 @@ ENV PYTHONPATH=/app
 ENV SANDBOX_ENVIRONMENT=production
 ENV SANDBOX_LOG_LEVEL=INFO
 ENV SANDBOX_LOG_JSON=true
-ENV SANDBOX_POSTGRES_DSN=postgresql+psycopg://postgres:snap123@localhost:5432/postgres
+ENV SANDBOX_POSTGRES_DSN=postgresql+psycopg://snap:snap@postgres:5432/snap
 
 # Expose port (if adding API later)
 EXPOSE 8080

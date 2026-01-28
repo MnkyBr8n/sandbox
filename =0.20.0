@@ -1,0 +1,5 @@
+Collecting tree-sitter
+  Using cached tree_sitter-0.25.2-cp313-cp313-win_amd64.whl.metadata (10 kB)
+Using cached tree_sitter-0.25.2-cp313-cp313-win_amd64.whl (127 kB)
+Installing collected packages: tree-sitter
+Successfully installed tree-sitter-0.25.2

@@ -1,7 +1,7 @@
 # sandbox/app/storage/db.py
 """
 Purpose: Centralized Postgres connection and session management.
-Uses project_id partitioning strategy (Option B).
+Uses project_id partitioning strategy
 """
 
 from __future__ import annotations
@@ -26,6 +26,10 @@ def get_engine() -> Engine:
         _ENGINE = create_engine(
             settings.postgres_dsn,
             pool_pre_ping=True,
+            pool_size=5,           # Default connections in pool
+            max_overflow=10,       # Extra connections allowed beyond pool_size
+            pool_recycle=1800,     # Recycle connections after 30 minutes
+            pool_timeout=30,       # Wait max 30s for connection from pool
             future=True,
         )
     return _ENGINE

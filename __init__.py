@@ -1,1 +1,1 @@
-# sandbox package
+# snap package

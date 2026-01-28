@@ -7,115 +7,89 @@ sandbox/
 │
 ├── app/
 │   ├── __init__.py
-│   ├── main.py                           # Orchestration: startup, process_project, get_project_notebook
+│   ├── main.py                           # Orchestration: startup, process_project, multi-parser pipeline
 │   │
 │   ├── config/
 │   │   ├── __init__.py
-│   │   └── settings.py                   # Pydantic settings with validation
+│   │   └── settings.py                   # Pydantic settings with ParserLimits, LOC thresholds
 │   │
 │   ├── ingest/
 │   │   ├── __init__.py
 │   │   ├── local_loader.py               # Ingest local directories
 │   │   ├── github_cloner.py              # Clone GitHub repos via git
-│   │   └── file_router.py                # Route files to appropriate parsers
+│   │   └── file_router.py                # Route files to multiple parsers
 │   │
 │   ├── parsers/
 │   │   ├── __init__.py
-│   │   ├── pdf_parser.py                 # Parse PDFs → text + metadata
-│   │   ├── text_parser.py                # Parse text/markdown/YAML/JSON
-│   │   ├── csv_parser.py                 # Parse CSV files
-│   │   └── code_parser.py                # Parse code files (basic, V2: tree-sitter)
+│   │   ├── tree_sitter_parser.py         # Code structure extraction (14 languages)
+│   │   ├── semgrep_parser.py             # Security and quality scanning
+│   │   ├── text_extractor.py             # Document text extraction
+│   │   └── csv_parser.py                 # CSV table preservation
 │   │
 │   ├── extraction/
 │   │   ├── __init__.py
-│   │   ├── field_mapper.py               # Map parsed content to field_ids
-│   │   └── snapshot_builder.py           # Build snapshots, assemble notebooks
+│   │   ├── field_mapper.py               # Categorize into 12 snapshot types
+│   │   └── snapshot_builder.py           # Build categorized snapshots
 │   │
 │   ├── storage/
 │   │   ├── __init__.py
-│   │   ├── db.py                         # SQLAlchemy engine, session factory
-│   │   └── snapshot_repo.py              # PostgreSQL persistence for snapshots
+│   │   ├── db.py                         # SQLAlchemy engine
+│   │   └── snapshot_repo.py              # PostgreSQL persistence
 │   │
 │   ├── security/
 │   │   ├── __init__.py
-│   │   ├── network_policy.py             # Domain allowlist validation
-│   │   └── sandbox_limits.py             # File size, runtime, repo limits
+│   │   ├── network_policy.py             # Domain allowlist
+│   │   └── sandbox_limits.py             # File/repo limits
 │   │
 │   └── logging/
 │       ├── __init__.py
-│       └── logger.py                     # Structured logging factory
+│       └── logger.py                     # Structured logging
 │
 ├── schemas/
-│   ├── master_notebook.yaml              # Master template (field registry, artifacts)
-│   ├── code_notebook_schema.json         # Code snapshot template
-│   └── text_notebook_shapshot.json       # Text snapshot template
+│   ├── master_notebook_v2.yaml           # 12 snapshot categories
+│   └── snapshot_templates.json           # Category templates
 │
-├── data/                                 # Runtime data directory
-│   ├── uploads/                          # User uploaded files staging
-│   ├── repos/                            # Cloned repositories
-│   └── projects/                         # Per-project data
-│       └── {project_id}/                 # Created at runtime per project
-│           ├── uploads/                  # Project-specific uploads
-│           ├── repos/                    # Project-specific cloned repos
-│           └── project_manifest.json     # Lightweight pointer to DB snapshots
+├── data/
+│   ├── uploads/
+│   ├── repos/
+│   └── projects/{project_id}/
+│       └── project_manifest.json
 │
 └── docker/
-    └── Dockerfile                        # Production container image
+    └── Dockerfile
 
-
-## Database Schema (PostgreSQL)
+## Database Schema
 
 snapshot_notebooks
-├── snapshot_id (UUID, PRIMARY KEY)
-├── project_id (TEXT, NOT NULL)
-├── snapshot_type (TEXT, NOT NULL)       # "code" or "text"
-├── source_file (TEXT, NOT NULL)
-├── field_values (JSONB, NOT NULL)       # {field_id: {value, sources, repeats_index}}
-├── created_at (TIMESTAMPTZ, DEFAULT NOW())
-└── UNIQUE(project_id, source_file)      # Idempotency constraint
+├── snapshot_id (UUID PRIMARY KEY)
+├── project_id (TEXT NOT NULL)
+├── snapshot_type (TEXT NOT NULL)         # 1 of 12 categories
+├── source_file (TEXT NOT NULL)
+├── field_values (JSONB NOT NULL)
+├── created_at, updated_at
+└── UNIQUE(project_id, source_file, snapshot_type)
 
+## 12 Snapshot Categories
 
-## Key Files Purpose
+Code (tree_sitter):
+1. file_metadata  2. imports  3. exports  4. functions
+5. classes  6. connections  7. repo_metadata
 
-### Entry Point
-- main.py: startup(), process_project(), get_project_notebook()
+Security/Quality (semgrep):
+8. security  9. quality
 
-### Configuration
-- settings.py: Environment-based config with Pydantic validation
-- master_notebook.yaml: Schema defining field_ids, types, multi/single values
+Documents (text_extractor):
+10. doc_metadata  11. doc_content  12. doc_analysis
 
-### Ingestion Pipeline
-- local_loader.py → github_cloner.py → file_router.py → parsers/
+## Multi-Parser Routing
 
-### Parsing Layer
-- pdf_parser.py, text_parser.py, csv_parser.py, code_parser.py
-- Each returns: List[Dict[field_id, value]]
+Code → tree_sitter + semgrep
+Text → text_extractor
+CSV  → csv_parser
 
-### Extraction Layer
-- field_mapper.py: Validates field_ids, enforces stop-on-fill
-- snapshot_builder.py: Creates snapshots, assembles notebooks
+## File Categorization
 
-### Storage Layer
-- db.py: SQLAlchemy connection management
-- snapshot_repo.py: CRUD operations on snapshot_notebooks table
-
-### Security
-- network_policy.py: Domain allowlist for git clone
-- sandbox_limits.py: File size, repo size, runtime limits
-
-
-## Data Flow
-
-Files → Ingest → Route → Parse → Field Map → Snapshot → DB
-                                                      ↓
-                          Project Notebook (assembled on-demand from DB)
-                                                      ↓
-                          Manifest (lightweight pointer saved to disk)
-
-
-## V2 Enhancements (Planned)
-
-- Enhanced master_notebook.yaml with connection fields
-- Tree-sitter parser for code structure extraction
-- Multi-step pipeline: parse → analyze → connect
-- Incremental snapshot updates across pipeline stages
+< 1500 LOC: normal
+1500-3999: large
+4000-4999: potential_god
+≥ 5000: rejected

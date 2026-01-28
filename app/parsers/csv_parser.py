@@ -1,77 +1,172 @@
-# sandbox/app/parsers/csv_parser.py
 """
-Purpose: Parse CSV files into normalized records.
-Does not infer schema beyond header and row values.
+CSV parser that preserves table structure (headers + rows) for exact reassembly.
+
+Output format:
+- csv.table_data: {headers: List[str], rows: List[List[str]], row_count: int, column_count: int}
+- csv.file.path: str
+- csv.file.rows: int
 """
 
-from __future__ import annotations
-
-import csv
-from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, Any, List
+import csv
+import time
 
 from app.logging.logger import get_logger
-from app.security.sandbox_limits import SandboxLimitsEnforcer, SandboxLimitError
+
+logger = get_logger("parsers.csv")
+
+# CSV limits
+CSV_HARD_CAP_FILE_SIZE_MB = 50
+CSV_HARD_CAP_ROWS = 500_000
+CSV_HARD_CAP_CELL_CHARS = 5_000
+
+CSV_SOFT_CAP_FILE_SIZE_MB = 5
+CSV_SOFT_CAP_ROWS = 50_000
 
 
-class CsvParseError(Exception):
-    pass
-
-
-@dataclass(frozen=True)
-class CsvParseResult:
-    path: str
-    headers: List[str]
-    rows: List[Dict[str, str]]
-    row_count: int
-
-
-def parse_csv(path: Path) -> CsvParseResult:
-    logger = get_logger("parser.csv")
-    limits = SandboxLimitsEnforcer()
-
-    if not path.exists() or not path.is_file():
-        raise CsvParseError("CSV path does not exist or is not a file")
-
+def parse_csv_file(path: Path) -> Dict[str, Any]:
+    """
+    Parse CSV file preserving table structure.
+    
+    Args:
+        path: Path to CSV file
+    
+    Returns:
+        Dict with field_id keys matching master_notebook.yaml
+        
+    Raises:
+        Exception if parsing fails or limits exceeded
+    """
+    start_time = time.time()
+    
+    # Check file size
+    file_size_mb = path.stat().st_size / (1024 * 1024)
+    
+    if file_size_mb > CSV_HARD_CAP_FILE_SIZE_MB:
+        raise ValueError(f"CSV file exceeds hard cap: {file_size_mb:.2f} MB > {CSV_HARD_CAP_FILE_SIZE_MB} MB")
+    
+    if file_size_mb > CSV_SOFT_CAP_FILE_SIZE_MB:
+        logger.warning("CSV file exceeds soft cap", extra={
+            "file": str(path),
+            "size_mb": file_size_mb,
+            "soft_cap_mb": CSV_SOFT_CAP_FILE_SIZE_MB
+        })
+    
+    # Parse CSV
     try:
-        limits.check_file_size(path)
-    except SandboxLimitError as exc:
-        raise CsvParseError(str(exc)) from exc
-
-    rows: List[Dict[str, str]] = []
-
-    try:
-        with path.open("r", encoding="utf-8", errors="replace", newline="") as f:
-            reader = csv.DictReader(f)
-            if reader.fieldnames is None:
-                raise CsvParseError("CSV has no headers")
-
-            headers = [h.strip() for h in reader.fieldnames]
-
-            for idx, row in enumerate(reader):
-                if idx >= limits.limits.max_csv_rows_per_file:
-                    break
-
-                normalized = {
-                    k.strip(): (v.strip() if isinstance(v, str) else "")
-                    for k, v in row.items()
-                    if k is not None
-                }
-                rows.append(normalized)
-
-    except CsvParseError:
+        with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+            reader = csv.reader(f)
+            
+            # Read headers (first row)
+            try:
+                headers = next(reader)
+            except StopIteration:
+                # Empty CSV
+                headers = []
+            
+            # Read data rows
+            rows = []
+            for row in reader:
+                # Check row limit
+                if len(rows) >= CSV_HARD_CAP_ROWS:
+                    raise ValueError(f"CSV exceeds row hard cap: {CSV_HARD_CAP_ROWS} rows")
+                
+                # Truncate cells exceeding character limit
+                truncated_row = []
+                for cell in row:
+                    if len(cell) > CSV_HARD_CAP_CELL_CHARS:
+                        logger.warning("CSV cell truncated", extra={
+                            "file": str(path),
+                            "row": len(rows) + 1,
+                            "original_length": len(cell),
+                            "truncated_to": CSV_HARD_CAP_CELL_CHARS
+                        })
+                        truncated_row.append(cell[:CSV_HARD_CAP_CELL_CHARS])
+                    else:
+                        truncated_row.append(cell)
+                
+                rows.append(truncated_row)
+            
+            # Check soft row limit
+            if len(rows) > CSV_SOFT_CAP_ROWS:
+                logger.warning("CSV exceeds soft row cap", extra={
+                    "file": str(path),
+                    "rows": len(rows),
+                    "soft_cap_rows": CSV_SOFT_CAP_ROWS
+                })
+            
+            # Build result
+            row_count = len(rows)
+            column_count = len(headers) if headers else 0
+            
+            result = {
+                "csv.table_data": {
+                    "headers": headers,
+                    "rows": rows,
+                    "row_count": row_count,
+                    "column_count": column_count
+                },
+                "csv.file.path": str(path),
+                "csv.file.rows": row_count
+            }
+            
+            duration_ms = (time.time() - start_time) * 1000
+            
+            logger.info("CSV parse complete", extra={
+                "file": str(path),
+                "rows": row_count,
+                "columns": column_count,
+                "parse_duration_ms": duration_ms,
+                "size_mb": file_size_mb
+            })
+            
+            return result
+            
+    except UnicodeDecodeError as e:
+        logger.error("CSV encoding error", extra={
+            "file": str(path),
+            "error": str(e)
+        })
         raise
-    except Exception as exc:
-        raise CsvParseError("Failed to parse CSV") from exc
+    except csv.Error as e:
+        logger.error("CSV parse error", extra={
+            "file": str(path),
+            "error": str(e)
+        })
+        raise
+    except Exception as e:
+        logger.error("CSV parser failure", extra={
+            "file": str(path),
+            "error": str(e)
+        })
+        raise
 
-    logger.info(
-        f"Parsed CSV {path} rows={len(rows)} columns={len(headers)}"
-    )
 
-    return CsvParseResult(
-        path=str(path),
-        headers=headers,
-        rows=rows,
-        row_count=len(rows),
-    )
+def reassemble_csv(table_data: Dict[str, Any]) -> str:
+    """
+    Reassemble CSV file from table_data structure.
+    
+    Args:
+        table_data: Dict with headers and rows
+    
+    Returns:
+        CSV file content as string
+    """
+    import io
+    
+    headers = table_data.get("headers", [])
+    rows = table_data.get("rows", [])
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write headers
+    if headers:
+        writer.writerow(headers)
+    
+    # Write rows
+    for row in rows:
+        writer.writerow(row)
+    
+    return output.getvalue()

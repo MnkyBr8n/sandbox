@@ -1,25 +1,38 @@
 # sandbox/app/security/sandbox_limits.py
 """
 Purpose: Enforce sandbox size, file, and runtime limits defined in config settings.
+
+Enhanced with:
+- LOC thresholds for file categorization (normal/large/potential_god/rejected)
+- Parser timeout enforcement (tree_sitter, semgrep)
+- CSV-specific limits (file size, rows, cells)
+- Snapshot limits per file
 """
 
 from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Literal
 
 from app.config.settings import get_settings
+from app.logging.logger import get_logger
+
+logger = get_logger("security.sandbox_limits")
 
 
 class SandboxLimitError(Exception):
     pass
 
 
+FileCategoryType = Literal["normal", "large", "potential_god", "rejected"]
+
+
 class SandboxLimitsEnforcer:
     def __init__(self) -> None:
         self.settings = get_settings()
         self.limits = self.settings.limits
+        self.parser_limits = self.settings.parser_limits
         self._project_start_ts = time.time()
 
     # ---------- Runtime enforcement ----------
@@ -71,8 +84,140 @@ class SandboxLimitsEnforcer:
             if total_bytes > self.limits.max_repo_bytes:
                 raise SandboxLimitError("Repository total size exceeded")
 
+    # ---------- LOC enforcement (file categorization) ----------
+
+    def check_code_file_loc(self, loc: int, path: Path) -> FileCategoryType:
+        """
+        Categorize code file by LOC and enforce hard cap.
+        
+        Args:
+            loc: Lines of code count
+            path: File path (for logging)
+        
+        Returns:
+            'normal', 'large', 'potential_god'
+        
+        Raises:
+            SandboxLimitError: If file exceeds hard cap (rejected)
+        """
+        if loc >= self.parser_limits.hard_cap_loc:
+            logger.error(f"File rejected: {path} ({loc} LOC >= {self.parser_limits.hard_cap_loc} LOC hard cap)")
+            raise SandboxLimitError(
+                f"File exceeds hard cap: {loc} LOC >= {self.parser_limits.hard_cap_loc} LOC"
+            )
+        
+        if loc >= self.parser_limits.potential_god_loc:
+            logger.warning(f"Potential god file: {path} ({loc} LOC)")
+            return "potential_god"
+        
+        if loc >= self.parser_limits.soft_cap_loc:
+            logger.warning(f"Large file: {path} ({loc} LOC, refactor recommended)")
+            return "large"
+        
+        return "normal"
+
+    # ---------- Parser timeout enforcement ----------
+
+    def check_parser_timeout(self, parser_name: str, duration_ms: float) -> None:
+        """
+        Check if parser exceeded timeout.
+        
+        Args:
+            parser_name: 'tree_sitter', 'semgrep', etc.
+            duration_ms: Parse duration in milliseconds
+        
+        Raises:
+            SandboxLimitError: If parser exceeded timeout
+        """
+        timeout_map = {
+            "tree_sitter": self.parser_limits.tree_sitter_timeout_initial,
+            "semgrep": self.parser_limits.semgrep_timeout_per_file * 1000,  # Convert to ms
+        }
+        
+        timeout_ms = timeout_map.get(parser_name)
+        if timeout_ms is None:
+            logger.warning(f"No timeout configured for parser: {parser_name}")
+            return
+        
+        if duration_ms > timeout_ms:
+            raise SandboxLimitError(
+                f"Parser {parser_name} exceeded timeout: {duration_ms}ms > {timeout_ms}ms"
+            )
+
+    # ---------- CSV enforcement ----------
+
+    def check_csv_limits(
+        self,
+        file_size_mb: float,
+        row_count: int,
+        path: Path
+    ) -> None:
+        """
+        Check CSV-specific limits.
+        
+        Args:
+            file_size_mb: File size in megabytes
+            row_count: Number of rows
+            path: File path (for logging)
+        
+        Raises:
+            SandboxLimitError: If CSV exceeds limits
+        """
+        # Hard caps
+        if file_size_mb > self.parser_limits.csv_hard_cap_file_size_mb:
+            raise SandboxLimitError(
+                f"CSV file exceeds hard cap: {file_size_mb:.2f} MB > {self.parser_limits.csv_hard_cap_file_size_mb} MB"
+            )
+        
+        if row_count > self.parser_limits.csv_hard_cap_rows:
+            raise SandboxLimitError(
+                f"CSV rows exceed hard cap: {row_count} > {self.parser_limits.csv_hard_cap_rows}"
+            )
+        
+        # Soft caps (warnings)
+        if file_size_mb > self.parser_limits.csv_soft_cap_file_size_mb:
+            logger.warning(f"CSV file exceeds soft cap: {path} ({file_size_mb:.2f} MB)")
+        
+        if row_count > self.parser_limits.csv_soft_cap_rows:
+            logger.warning(f"CSV rows exceed soft cap: {path} ({row_count} rows)")
+
+    def check_csv_cell_size(self, cell_length: int, row_num: int, path: Path) -> None:
+        """
+        Check individual CSV cell size.
+        
+        Args:
+            cell_length: Length of cell content
+            row_num: Row number (for logging)
+            path: File path (for logging)
+        
+        Raises:
+            SandboxLimitError: If cell exceeds limit
+        """
+        if cell_length > self.parser_limits.csv_hard_cap_cell_chars:
+            logger.warning(
+                f"CSV cell truncated: {path} row {row_num} "
+                f"({cell_length} chars > {self.parser_limits.csv_hard_cap_cell_chars} chars)"
+            )
+
     # ---------- Snapshot enforcement ----------
 
     def check_snapshot_size(self, snapshot_bytes: int) -> None:
         if snapshot_bytes > self.limits.snapshot_notebook_cap_bytes:
             raise SandboxLimitError("Snapshot notebook size cap exceeded")
+
+    def check_snapshot_count_per_file(self, snapshot_count: int) -> None:
+        """
+        Check number of snapshots per file.
+        
+        Args:
+            snapshot_count: Number of snapshots created for file
+        
+        Raises:
+            SandboxLimitError: If exceeds max (12)
+        """
+        max_snapshots = 12  # Max snapshot categories
+        
+        if snapshot_count > max_snapshots:
+            raise SandboxLimitError(
+                f"Too many snapshots per file: {snapshot_count} > {max_snapshots}"
+            )

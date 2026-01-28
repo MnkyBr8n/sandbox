@@ -1,25 +1,27 @@
-# sandbox/app/storage/snapshot_repo.py
+# snap/app/storage/snapshot_repo.py
 """
 Purpose: Persist snapshot notebooks keyed by snapshot_id with idempotency protection.
-Stores field values in notebook schema format: {value, sources, repeats_index}.
-Handles multi vs single value fields based on master schema.
+
+Architecture:
+- snapshot_type is one of 12 categories (file_metadata, imports, exports, etc.)
+- UNIQUE constraint on (project_id, source_file, snapshot_type)
+- One file creates multiple snapshots (one per category)
+- Query methods by snapshot_type for RAG queries
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from datetime import datetime
-from pathlib import Path
 from uuid import uuid4
-import json
 import yaml
+import json
 
 from sqlalchemy import text
 
 from app.logging.logger import get_logger
 from app.storage.db import db_session, get_engine
-from app.extraction.field_mapper import FieldMapResult
 from app.config.settings import get_settings
 
 
@@ -39,9 +41,9 @@ class FieldConfig:
 class SnapshotRecord:
     snapshot_id: str
     project_id: str
-    snapshot_type: str
+    snapshot_type: str  # One of 12 categories
     source_file: str
-    field_values: Dict[str, Dict[str, Any]]  # field_id -> {value, sources, repeats_index}
+    field_values: Dict[str, Any]  # Direct field_id -> value mapping
     created_at: datetime
 
 
@@ -75,8 +77,14 @@ class SnapshotRepository:
                 )
 
     def _ensure_table(self) -> None:
+        """Create snapshot_notebooks table"""
         engine = get_engine()
         with engine.connect() as conn:
+            # Drop old UNIQUE constraint if exists
+            conn.execute(text("""
+                DROP INDEX IF EXISTS snapshot_notebooks_project_id_source_file_key
+            """))
+            
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS snapshot_notebooks (
                     snapshot_id UUID PRIMARY KEY,
@@ -85,7 +93,7 @@ class SnapshotRepository:
                     source_file TEXT NOT NULL,
                     field_values JSONB NOT NULL,
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                    UNIQUE(project_id, source_file)
+                    UNIQUE(project_id, source_file, snapshot_type)
                 )
             """))
             conn.execute(text("""
@@ -94,7 +102,11 @@ class SnapshotRepository:
             """))
             conn.execute(text("""
                 CREATE INDEX IF NOT EXISTS idx_snapshot_type
-                ON snapshot_notebooks(snapshot_type)
+                ON snapshot_notebooks(project_id, snapshot_type)
+            """))
+            conn.execute(text("""
+                CREATE INDEX IF NOT EXISTS idx_snapshot_file
+                ON snapshot_notebooks(project_id, source_file)
             """))
             conn.commit()
 
@@ -103,17 +115,21 @@ class SnapshotRepository:
         project_id: str,
         snapshot_type: str,
         source_file: str,
-        field_map_result: FieldMapResult,
+        field_values: Dict[str, Any],
+        snapshot_id: Optional[str] = None,
     ) -> SnapshotRecord:
         """
-        Create or update snapshot for (project_id, source_file).
-        Idempotency: same source_file will not create duplicate snapshots.
+        Create or update snapshot for (project_id, source_file, snapshot_type).
+        
+        Each file can have multiple snapshots (one per category).
+        Idempotency: same (project_id, source_file, snapshot_type) will not create duplicates.
         
         Args:
             project_id: unique project identifier
-            snapshot_type: "code" or "text"
-            source_file: source file path (used for idempotency)
-            field_map_result: output from FieldMapper
+            snapshot_type: One of 12 categories (file_metadata, imports, etc.)
+            source_file: source file path
+            field_values: Dict with field_id -> value mappings (direct, not wrapped)
+            snapshot_id: Optional pre-generated UUID (for logging correlation)
         
         Returns:
             SnapshotRecord with final state
@@ -124,49 +140,46 @@ class SnapshotRepository:
                 text("""
                     SELECT snapshot_id, field_values, created_at 
                     FROM snapshot_notebooks 
-                    WHERE project_id = :pid AND source_file = :sf
+                    WHERE project_id = :pid AND source_file = :sf AND snapshot_type = :stype
                 """),
-                {"pid": project_id, "sf": source_file}
+                {"pid": project_id, "sf": source_file, "stype": snapshot_type}
             )
             row = result.fetchone()
 
             if row:
-                # Existing snapshot: merge fields
+                # Existing snapshot: update fields
                 snapshot_id = row[0]
-                existing = row[1]
                 
-                # Security logging: duplicate snapshot attempt
                 self.logger.warning("Duplicate snapshot attempt", extra={
                     "project_id": project_id,
                     "source_file": source_file,
+                    "snapshot_type": snapshot_type,
                     "existing_snapshot_id": snapshot_id,
                     "security_event": "idempotency_skip",
-                    "action": "merge_fields"
+                    "action": "update_fields"
                 })
                 
-                merged = self._merge(existing, field_map_result, source_file)
-
                 session.execute(
                     text("""
                         UPDATE snapshot_notebooks
-                        SET field_values = CAST(:fv AS jsonb)
+                        SET field_values = :fv
                         WHERE snapshot_id = :sid
                     """),
-                    {"fv": json.dumps(merged), "sid": snapshot_id}
+                    {"fv": json.dumps(field_values), "sid": snapshot_id}
                 )
                 
-                self.logger.info(f"Updated snapshot snapshot_id={snapshot_id} source={source_file}")
+                self.logger.info(f"Updated snapshot snapshot_id={snapshot_id} type={snapshot_type} source={source_file}")
                 created_at = row[2]
             else:
-                # New snapshot: create with UUID
-                snapshot_id = str(uuid4())
-                field_values = self._convert_to_schema_format(field_map_result, source_file)
-
+                # New snapshot: create with provided or generated UUID
+                if snapshot_id is None:
+                    snapshot_id = str(uuid4())
+                
                 session.execute(
                     text("""
                         INSERT INTO snapshot_notebooks
                         (snapshot_id, project_id, snapshot_type, source_file, field_values)
-                        VALUES (:sid, :pid, :stype, :sf, CAST(:fv AS jsonb))
+                        VALUES (:sid, :pid, :stype, :sf, :fv)
                     """),
                     {
                         "sid": snapshot_id,
@@ -195,84 +208,6 @@ class SnapshotRepository:
                 field_values=final_row[0],
                 created_at=created_at
             )
-
-    def _convert_to_schema_format(
-        self,
-        field_map_result: FieldMapResult,
-        source_file: str,
-    ) -> Dict[str, Dict[str, Any]]:
-        """
-        Convert FieldMapResult to notebook schema format:
-        {field_id: {value, sources, repeats_index}}
-        """
-        formatted: Dict[str, Dict[str, Any]] = {}
-
-        for field_id, field_value in field_map_result.fields.items():
-            config = self.field_configs.get(field_id)
-            
-            if config and config.multi:
-                # Multi-value field: value is array
-                value = [field_value.value] if not isinstance(field_value.value, list) else field_value.value
-            else:
-                # Single-value field: value is scalar
-                value = field_value.value
-
-            formatted[field_id] = {
-                "value": value,
-                "sources": [source_file],
-                "repeats_index": {"references": []}
-            }
-
-        return formatted
-
-    def _merge(
-        self,
-        existing: Dict[str, Dict[str, Any]],
-        field_map_result: FieldMapResult,
-        source_file: str,
-    ) -> Dict[str, Dict[str, Any]]:
-        """
-        Merge incoming field_map_result into existing snapshot.
-        Handles stop-on-fill for single-value fields.
-        Appends to multi-value fields.
-        """
-        merged = {k: dict(v) for k, v in existing.items()}
-
-        for field_id, field_value in field_map_result.fields.items():
-            config = self.field_configs.get(field_id)
-
-            if field_id not in merged:
-                # New field
-                if config and config.multi:
-                    value = [field_value.value] if not isinstance(field_value.value, list) else field_value.value
-                else:
-                    value = field_value.value
-
-                merged[field_id] = {
-                    "value": value,
-                    "sources": [source_file],
-                    "repeats_index": {"references": []}
-                }
-            else:
-                # Existing field
-                if config and config.multi:
-                    # Multi: append unique values
-                    existing_values = merged[field_id]["value"]
-                    new_val = field_value.value
-                    
-                    if new_val not in existing_values:
-                        existing_values.append(new_val)
-                        merged[field_id]["sources"].append(source_file)
-                    else:
-                        # Repeat: add to repeats_index
-                        if source_file not in merged[field_id]["repeats_index"]["references"]:
-                            merged[field_id]["repeats_index"]["references"].append(source_file)
-                else:
-                    # Single: stop-on-fill, add to repeats_index
-                    if source_file not in merged[field_id]["repeats_index"]["references"]:
-                        merged[field_id]["repeats_index"]["references"].append(source_file)
-
-        return merged
 
     def get_by_snapshot_id(self, snapshot_id: str) -> SnapshotRecord | None:
         """Retrieve snapshot by snapshot_id."""
@@ -324,3 +259,137 @@ class SnapshotRepository:
                 )
                 for row in rows
             ]
+
+    def get_by_file(self, project_id: str, source_file: str) -> List[SnapshotRecord]:
+        """
+        Retrieve all snapshots for a specific file.
+        
+        Returns multiple snapshots (one per category).
+        
+        Args:
+            project_id: Project identifier
+            source_file: Source file path
+        
+        Returns:
+            List of SnapshotRecords for this file
+        """
+        with db_session() as session:
+            result = session.execute(
+                text("""
+                    SELECT snapshot_id, snapshot_type, field_values, created_at 
+                    FROM snapshot_notebooks 
+                    WHERE project_id = :pid AND source_file = :sf
+                    ORDER BY snapshot_type ASC
+                """),
+                {"pid": project_id, "sf": source_file}
+            )
+            rows = result.fetchall()
+
+            return [
+                SnapshotRecord(
+                    snapshot_id=row[0],
+                    project_id=project_id,
+                    snapshot_type=row[1],
+                    source_file=source_file,
+                    field_values=row[2],
+                    created_at=row[3]
+                )
+                for row in rows
+            ]
+
+    def get_by_type(self, project_id: str, snapshot_type: str) -> List[SnapshotRecord]:
+        """
+        Retrieve all snapshots of a specific type across project.
+        
+        RAG query method: "Show all imports", "Find all security issues"
+        
+        Args:
+            project_id: Project identifier
+            snapshot_type: One of 12 categories
+        
+        Returns:
+            List of SnapshotRecords matching type
+        """
+        with db_session() as session:
+            result = session.execute(
+                text("""
+                    SELECT snapshot_id, source_file, field_values, created_at 
+                    FROM snapshot_notebooks 
+                    WHERE project_id = :pid AND snapshot_type = :stype
+                    ORDER BY source_file ASC
+                """),
+                {"pid": project_id, "stype": snapshot_type}
+            )
+            rows = result.fetchall()
+
+            return [
+                SnapshotRecord(
+                    snapshot_id=row[0],
+                    project_id=project_id,
+                    snapshot_type=snapshot_type,
+                    source_file=row[1],
+                    field_values=row[2],
+                    created_at=row[3]
+                )
+                for row in rows
+            ]
+
+    def delete_by_file(self, project_id: str, source_file: str) -> int:
+        """
+        Delete all snapshots for a file.
+        
+        Deletes all snapshots for this file (all categories).
+        
+        Args:
+            project_id: Project identifier
+            source_file: Source file path
+        
+        Returns:
+            Number of snapshots deleted
+        """
+        with db_session() as session:
+            result = session.execute(
+                text("""
+                    DELETE FROM snapshot_notebooks 
+                    WHERE project_id = :pid AND source_file = :sf
+                    RETURNING snapshot_id
+                """),
+                {"pid": project_id, "sf": source_file}
+            )
+            deleted_count = len(result.fetchall())
+            
+            self.logger.info("Deleted file snapshots", extra={
+                "project_id": project_id,
+                "source_file": source_file,
+                "deleted_count": deleted_count
+            })
+            
+            return deleted_count
+
+    def delete_by_project(self, project_id: str) -> int:
+        """
+        Delete all snapshots for a project.
+        
+        Args:
+            project_id: Project identifier
+        
+        Returns:
+            Number of snapshots deleted
+        """
+        with db_session() as session:
+            result = session.execute(
+                text("""
+                    DELETE FROM snapshot_notebooks 
+                    WHERE project_id = :pid
+                    RETURNING snapshot_id
+                """),
+                {"pid": project_id}
+            )
+            deleted_count = len(result.fetchall())
+            
+            self.logger.info("Deleted project snapshots", extra={
+                "project_id": project_id,
+                "deleted_count": deleted_count
+            })
+            
+            return deleted_count
